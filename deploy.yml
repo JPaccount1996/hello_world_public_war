@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp-container
+        image: jayap.jfrog.io/jayap-docker-local/${ms}:webapp_${BUILD_NUMBER}
+               
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: jfrog-docker-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
